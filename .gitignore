@@ -1,0 +1,11 @@
+*.pidb
+*.VisualState.xml
+*.suo
+/CanonDSLR/obj
+/CanonDSLR/bin
+/CanonDSLRServer/obj
+/CanonDSLRServer/bin
+/CanonDSLRWindow/obj
+/CanonDSLRWindow/bin
+/RunDSLRServer/bin
+/RunDSLRServer/obj
