@@ -52,7 +52,7 @@
     <Compile Include="repl.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\GitHub\Hermod\Hermod\Hermod.csproj">
+    <ProjectReference Include="..\..\Hermod\Hermod\Hermod.csproj">
       <Project>{EAB20045-3D15-4220-BB56-B22FF6630AC9}</Project>
       <Name>Hermod</Name>
     </ProjectReference>
