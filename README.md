@@ -1,4 +1,4 @@
-[CanonDSLR.NET](http://github.com/aperis/CanonDSLR.NET) is a project for remote controlling your Canon DSLR camera.
+[CanonDSLR.NET](http://github.com/aperis/CanonDSLR.NET) is a .NET library for remote controlling your Canon DSLR camera.
 
 #### Usage
 
