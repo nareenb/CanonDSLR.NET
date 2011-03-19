@@ -1,0 +1,129 @@
+<html>
+<head>
+
+	<title>CanonDSLRServer</title>
+
+	<script type="text/javascript" src="resources/jquery/jquery-1.5.1.js"></script>
+	<script type="text/javascript" src="resources/jquery/jquery.form.js"></script> 
+	<script type="text/javascript" src="resources/jquery/jquery.selectboxes.js"></script> 
+	<script type="text/javascript" src="resources/jquery/jquery.checkboxes.js"></script> 
+
+	<script type="text/javascript"> 
+
+		// Wait for the DOM to be loaded!
+		$(document).ready(function() {
+
+          // bind form using 'ajaxForm'
+			$('#CameraSettings').ajaxForm({
+//				beforeSubmit:		showRequest,  	// pre-submit callback
+//              success:			showResponse,  	// post-submit callback
+			});
+		  
+			$('#CameraSettings').submit(function() {
+				alert('SubmitFunction');
+				// submit the form 
+			//	$(this).ajaxSubmit(); 
+				// return false to prevent normal browser submit and page navigation 
+				return false; 
+			});
+			
+			var Cameras = {
+				"0"  : "0",
+			};
+			
+			$("#Camera").addOption(Cameras, false);
+			
+            $("#Tv"). ajaxAddOption("/0/properties/TvMap");
+			$("#Av"). ajaxAddOption("/0/properties/AvMap");
+            $("#ISO").ajaxAddOption("/0/properties/ISOMap");
+
+		});
+
+		// pre-submit callback 
+		function showRequest(formData, jqForm, options) {
+		
+			// formData is an array; here we use $.param to convert it to a string to display it 
+			// but the form plugin does this for you automatically when it submits the data 
+			var queryString = $.param(formData); 
+		 
+			// jqForm is a jQuery object encapsulating the form element.  To access the 
+			// DOM element for the form do this: 
+			// var formElement = jqForm[0]; 
+		 
+			alert('About to submit: \n\n' + queryString); 
+		 
+			// here we could return false to prevent the form from being submitted; 
+			// returning anything other than false will allow the form submit to continue 
+			return true;
+			
+		} 
+		 
+		// post-submit callback 
+		function showResponse(responseText, statusText, xhr, $form) {
+		
+			// for normal html responses, the first argument to the success callback 
+			// is the XMLHttpRequest object's responseText property 
+		 
+			// if the ajaxForm method was passed an Options Object with the dataType 
+			// property set to 'xml' then the first argument to the success callback 
+			// is the XMLHttpRequest object's responseXML property 
+		 
+			// if the ajaxForm method was passed an Options Object with the dataType 
+			// property set to 'json' then the first argument to the success callback 
+			// is the json data object returned by the server 
+		 
+			alert('status: ' + statusText + '\n\nresponseText: \n' + responseText + 
+				'\n\nThe output div should have already been updated with the responseText.');
+				
+		} 
+
+		function myAction() {
+			alert('lalala');
+		}
+
+		function mySubmit() {
+			alert('mySubmit');
+		}
+
+//		$.post(
+//			"register.php",
+//			$("#CameraSettings").serialize(),
+//			function(data) {
+//				alert(data);
+//			}, "json"
+//		);
+
+	</script> 
+	
+</head>
+<!-- this.form.Pizza.options[this.form.Pizza.selectedIndex].value -->
+<!-- action="javascript:mySubmit()"  -->
+<body>
+
+	<form id="CameraSettings">
+
+		<p>
+			Camera <select id="Camera" name="Camera" size="1" onchange="javascript:alert(this.value)"></select>
+		</p>
+  
+		<p>
+			Tv <select id="Tv" name="Tv" size="1" onchange="javascript:alert(this.value)"></select>
+		</p>
+  
+		<p>
+			Av <select id="Av" name="Av" size="1" onchange="javascript:alert(this.value)"></select>
+		</p>
+  
+		<p>
+			ISO <select id="ISO" name="ISO" size="1" onchange="javascript:alert(this.value)"></select>
+		</p>
+
+		<p>
+			<input type="submit" value=" Take Picture "></input>
+		</p>
+
+	</form>
+
+</body>
+
+</html>

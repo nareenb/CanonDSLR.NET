@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FFCDBB8A-3D7A-4799-A7A1-B214A2D70489}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CanonDSLR</RootNamespace>
+    <AssemblyName>CanonDSLR</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Camera.cs" />
+    <Compile Include="CameraProperties\LensStatus.cs" />
+    <Compile Include="CaptureProperties\AEMode.cs" />
+    <Compile Include="CaptureProperties\AFMode.cs" />
+    <Compile Include="CaptureProperties\Bracket.cs" />
+    <Compile Include="CameraProperties\ETTL2Mode.cs" />
+    <Compile Include="CameraProperties\OutputDevice.cs" />
+    <Compile Include="CameraProperties\StroboMode.cs" />
+    <Compile Include="CameraProperties\Zoom.cs" />
+    <Compile Include="CaptureProperties\DriveMode.cs" />
+    <Compile Include="CaptureProperties\MeteringMode.cs" />
+    <Compile Include="CaptureProperties\ExposureCompensation.cs" />
+    <Compile Include="Storage\Capacity.cs" />
+    <Compile Include="Datatypes\CanonSDKError.cs" />
+    <Compile Include="Datatypes\DeviceInfo.cs" />
+    <Compile Include="Storage\DirectoryItemInfo.cs" />
+    <Compile Include="CameraProperties\FocusInfo.cs" />
+    <Compile Include="CameraProperties\FocusPoint.cs" />
+    <Compile Include="ImageProperties\ImageInfo.cs" />
+    <Compile Include="ImageProperties\PictureStyleDescription.cs" />
+    <Compile Include="Datatypes\Point.cs" />
+    <Compile Include="Datatypes\PropertyDescription.cs" />
+    <Compile Include="Datatypes\Rational.cs" />
+    <Compile Include="Datatypes\Rectangle.cs" />
+    <Compile Include="Storage\SaveImageSetting.cs" />
+    <Compile Include="Datatypes\Size.cs" />
+    <Compile Include="Datatypes\Time.cs" />
+    <Compile Include="Storage\VolumeInfo.cs" />
+    <Compile Include="Storage\Access.cs" />
+    <Compile Include="CameraProperties\BatteryLevel.cs" />
+    <Compile Include="Events\PropertyEvent.cs" />
+    <Compile Include="Events\ObjectEvent.cs" />
+    <Compile Include="Events\StateEvent.cs" />
+    <Compile Include="ImageProperties\ColorMatrix.cs" />
+    <Compile Include="ImageProperties\ColorSpace.cs" />
+    <Compile Include="ImageProperties\CompressQuality.cs" />
+    <Compile Include="ImageProperties\FilterEffect.cs" />
+    <Compile Include="ImageProperties\ImageFormat.cs" />
+    <Compile Include="ImageProperties\ImageQuality.cs" />
+    <Compile Include="ImageProperties\ImageQualityForLegacy.cs" />
+    <Compile Include="ImageProperties\ImageSize.cs" />
+    <Compile Include="ImageProperties\PhotoEffect.cs" />
+    <Compile Include="ImageProperties\PictureStyle.cs" />
+    <Compile Include="ImageProperties\TonigEffect.cs" />
+    <Compile Include="CaptureProperties\WhiteBalance.cs" />
+    <Compile Include="CaptureProperties\Av.cs" />
+    <Compile Include="Commands\CameraCommand.cs" />
+    <Compile Include="Commands\CameraState.cs" />
+    <Compile Include="Commands\Af.cs" />
+    <Compile Include="Commands\ShutterButton.cs" />
+    <Compile Include="CameraProperties\DepthOfFieldPreview.cs" />
+    <Compile Include="CameraProperties\DriveLens.cs" />
+    <Compile Include="Storage\FileAttribute.cs" />
+    <Compile Include="Storage\FileCreateDisposition.cs" />
+    <Compile Include="ImageProperties\ImageSource.cs" />
+    <Compile Include="Datatypes\ProgressOption.cs" />
+    <Compile Include="Storage\SaveTo.cs" />
+    <Compile Include="Storage\SeekOrigin.cs" />
+    <Compile Include="Datatypes\PropertyID.cs" />
+    <Compile Include="Datatypes\DataType.cs" />
+    <Compile Include="Storage\StorageType.cs" />
+    <Compile Include="ImageProperties\TargetImageType.cs" />
+    <Compile Include="Storage\TransferOption.cs" />
+    <Compile Include="EDSDK.cs" />
+    <Compile Include="CaptureProperties\ISO.cs" />
+    <Compile Include="CaptureProperties\Tv.cs" />
+    <Compile Include="CanonSDKExceptions.cs" />
+    <Compile Include="libs\EnumHelper.cs" />
+    <Compile Include="libs\getline.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CanonDSLRWrapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DLLs\DPPDLL.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DLLs\DPPLibCom.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DLLs\DPPRSC.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DLLs\EDSDK.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DLLs\EdsImage.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DLLs\MLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DLLs\Ucs32P.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
