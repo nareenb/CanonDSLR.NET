@@ -89,9 +89,9 @@ namespace com.aperis.RunDSLRServer
             //var edsStateEventHandler = new EDSDK.EdsStateEventHandler(stateEventHandler);
             //err = EDSDK.EdsSetCameraStateEventHandler(_Camera, EDSDK.StateEvent_All, edsStateEventHandler, new IntPtr(0));
 
-           //_Camera._ObjectEventHandler(123, IntPtr.Zero, IntPtr.Zero);
+            //_Camera._ObjectEventHandler(123, IntPtr.Zero, IntPtr.Zero);
 
-            
+
 
             ////uint _PropertyData2;
             ////var _GetPropAv = EDSDKLib.EDSDK.EdsGetPropertyData(_Camera.DevicePointer, (uint) EDSDK.PropertyID.PropID_Av, 0, out _PropertyData2);
@@ -106,7 +106,7 @@ namespace com.aperis.RunDSLRServer
             //var edsObjectEventHandler = new EDSDK.EdsObjectEventHandler(objectEventHandler);
             //var _SetObjectEventHandler = EDSDKLib.EDSDK.EdsSetObjectEventHandler(_Camera.DevicePointer, EDSDK.ObjectEvent_All, edsObjectEventHandler, IntPtr.Zero);
             //Console.WriteLine("SetObjectEventHandler: {0}", (_SetObjectEventHandler == 0) ? "ok" : "failed!");
-            
+
             var workerThread = new Thread(CanonDSLRWrapper.NotificationHelper);
             workerThread.Start();
 
@@ -123,31 +123,31 @@ namespace com.aperis.RunDSLRServer
 
             Console.WriteLine();
 
-            Console.WriteLine("ProductName : "          + _Camera.ProductName);
-            Console.WriteLine("BodyId : "               + _Camera.BodyId);
-            Console.WriteLine("OwnerName : "            + _Camera.OwnerName);
+            Console.WriteLine("ProductName : " + _Camera.ProductName);
+            Console.WriteLine("BodyId : " + _Camera.BodyId);
+            Console.WriteLine("OwnerName : " + _Camera.OwnerName);
             //Console.WriteLine("MakerName : "            + _Camera.MakerName);
-            Console.WriteLine("CameraTime : "           + _Camera.CameraTime);
-            Console.WriteLine("FirmwareVersion : "      + _Camera.FirmwareVersion);
-            Console.WriteLine("BatteryLevel : "         + _Camera.BatteryLevel);
-            Console.WriteLine("SaveTo : "               + _Camera.SaveTo);
+            Console.WriteLine("CameraTime : " + _Camera.CameraTime);
+            Console.WriteLine("FirmwareVersion : " + _Camera.FirmwareVersion);
+            Console.WriteLine("BatteryLevel : " + _Camera.BatteryLevel);
+            Console.WriteLine("SaveTo : " + _Camera.SaveTo);
             //Console.WriteLine("BatteryQuality : "       + _Camera.BatteryQuality);
-            Console.WriteLine("CurrentStorage : "       + _Camera.CurrentStorage);
-            Console.WriteLine("CurrentFolder : "        + _Camera.CurrentFolder);
-            
+            Console.WriteLine("CurrentStorage : " + _Camera.CurrentStorage);
+            Console.WriteLine("CurrentFolder : " + _Camera.CurrentFolder);
+
             Console.WriteLine();
 
-            Console.WriteLine("AEMode : "               + _Camera.AEMode);
-            Console.WriteLine("AFMode : "               + _Camera.AFMode);
-            Console.WriteLine("Av : "                   + _Camera.Av);
-            Console.WriteLine("Tv : "                   + _Camera.Tv);
-            Console.WriteLine("ISO : "                  + _Camera.ISO);
+            Console.WriteLine("AEMode : " + _Camera.AEMode);
+            Console.WriteLine("AFMode : " + _Camera.AFMode);
+            Console.WriteLine("Av : " + _Camera.Av);
+            Console.WriteLine("Tv : " + _Camera.Tv);
+            Console.WriteLine("ISO : " + _Camera.ISO);
             Console.WriteLine("ExposureCompensation : " + _Camera.ExposureCompensation);
-            Console.WriteLine("ColorTemperature : "     + _Camera.ColorTemperature);
-            Console.WriteLine("MeteringMode : "         + _Camera.MeteringMode);
-            Console.WriteLine("DriveMode : "            + _Camera.DriveMode);
+            //Console.WriteLine("ColorTemperature : "     + _Camera.ColorTemperature);
+            Console.WriteLine("MeteringMode : " + _Camera.MeteringMode);
+            Console.WriteLine("DriveMode : " + _Camera.DriveMode);
 
-            Console.WriteLine("DeviceDescription : "    + _Camera.DeviceDescription);
+            Console.WriteLine("DeviceDescription : " + _Camera.DeviceDescription);
 
             Console.WriteLine();
 
@@ -201,8 +201,8 @@ namespace com.aperis.RunDSLRServer
 
             _Camera.CloseSession();
             //   _CanonDSLRServer.CanonDSLRWrapper.Close();
-        
-        
+
+
         }
 
     }

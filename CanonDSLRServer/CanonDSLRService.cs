@@ -268,41 +268,134 @@ namespace com.aperis.CanonDSLRServer
 
         #region Camera Properties
 
-        #region (private) GetPropertyMap(myCamera, myPropertyFunc)
+        #region (private) JSONMap_HTTPResult(myMap, myJSONMap)
 
-        private HTTPResponse GetPropertyMap(String myCamera, Func<Camera, IEnumerable<KeyValuePair<String, String>>> myPropertyFunc)
+        private HTTPResponse JSONMap_HTTPResult(String myMap, IEnumerable<KeyValuePair<String, String>> myJSONMap)
+        {
+
+            var _JSONItems = new JObject();
+
+            foreach (var _item in myJSONMap)
+                _JSONItems.Add(new JProperty(_item.Key, _item.Value));
+
+            var _JSONMap = new JProperty(myMap, _JSONItems);
+            var _JSON    = new JObject(_JSONMap);
+
+            return new HTTPResponse(
+
+                new HTTPResponseHeader()
+                {
+                    HttpStatusCode = HTTPStatusCode.OK,
+                    CacheControl   = "no-cache",
+                    ContentType    = HTTPContentType.JSON_UTF8
+                },
+
+                UTF8Encoding.UTF8.GetBytes(_JSON.ToString())
+
+            );
+
+        }
+
+        #endregion
+
+        #region (private) JSONValue_HTTPResult(myKey, myValue)
+
+        private HTTPResponse JSONValue_HTTPResult(String myKey, String myValue)
+        {
+
+            var _JSON = new JObject(new JProperty(myKey, myValue));
+
+            return new HTTPResponse(
+
+                new HTTPResponseHeader()
+                {
+                    HttpStatusCode = HTTPStatusCode.OK,
+                    CacheControl   = "no-cache",
+                    ContentType    = HTTPContentType.JSON_UTF8
+                },
+
+                UTF8Encoding.UTF8.GetBytes(_JSON.ToString())
+
+            );
+
+        }
+
+        #endregion
+
+        #region (private) GetProperty(myCamera, myKey, myPropertyFunc)
+
+        private HTTPResponse GetProperty(String myCamera, String myKey, Func<Camera, String> myPropertyFunc)
         {
 
             UInt32 _CameraId;
+
             if (UInt32.TryParse(myCamera, out _CameraId))
             {
 
                 var _CanonDSLRWrapper = CanonDSLRWrapper.Instance;
                 var _Camera           = _CanonDSLRWrapper.GetCamera(_CameraId);
-                //var _JSONAvMap        = JsonConvert.SerializeObject(_Camera.AvMap, Formatting.Indented);
 
-                //var _JSON = _Camera.AvMap.Aggregate(new JObject(), (J, v) => J.Add(v.Key, v.Value));
+                return JSONValue_HTTPResult(myKey, myPropertyFunc(_Camera));
 
-                var _JSON = new JObject();
-                foreach (var _item in myPropertyFunc(_Camera))
-                    _JSON.Add(new JProperty(_item.Key, _item.Value));
+            }
 
-                #region HTTPResponse
-
-                var _ContentType = HTTPContentType.JSON_UTF8;
+            else
+            {
 
                 return new HTTPResponse(
 
                     new HTTPResponseHeader()
                     {
-                        HttpStatusCode = HTTPStatusCode.OK,
+                        HttpStatusCode = HTTPStatusCode.NotFound,
                         CacheControl   = "no-cache",
-                        ContentType    = _ContentType
+                        ContentType    = HTTPContentType.HTML_UTF8
                     },
 
-                    UTF8Encoding.UTF8.GetBytes(_JSON.ToString())
+                    UTF8Encoding.UTF8.GetBytes("Camera '" + myCamera + "' not found!")
 
                 );
+            }
+
+        }
+
+        #endregion
+
+        #region (private) GetPropertyMap(myCamera, myMap, myPropertyFunc)
+
+        private HTTPResponse GetPropertyMap(String myCamera, String myMap, Func<Camera, IEnumerable<KeyValuePair<String, String>>> myPropertyFunc)
+        {
+
+            UInt32 _CameraId;
+
+            if (UInt32.TryParse(myCamera, out _CameraId))
+            {
+
+                try
+                {
+
+                    var _Camera = CanonDSLRWrapper.Instance.GetCamera(_CameraId);
+                    //var _JSONAvMap        = JsonConvert.SerializeObject(_Camera.AvMap, Formatting.Indented);
+                    //var _JSON = _Camera.AvMap.Aggregate(new JObject(), (J, v) => J.Add(v.Key, v.Value));
+
+                    return JSONMap_HTTPResult(myMap, myPropertyFunc(_Camera));
+
+                }
+                catch (Exception e)
+                {
+                    return new HTTPResponse(
+
+                        new HTTPResponseHeader()
+                        {
+                            HttpStatusCode = HTTPStatusCode.InternalServerError,
+                            CacheControl   = "no-cache",
+                            ContentType    = HTTPContentType.HTML_UTF8
+                        },
+
+                        UTF8Encoding.UTF8.GetBytes(e.ToString())
+
+                    );
+                }
+
             }
 
             else
@@ -322,35 +415,53 @@ namespace com.aperis.CanonDSLRServer
                 );
             } 
 
-            #endregion
-
         }
 
         #endregion
 
-        #region GetTvMap(myCamera)
 
-        public HTTPResponse GetTvMap(String myCamera)
+        #region GetCameraMap()
+
+        /// <summary>
+        /// Return a map of camera ids.
+        /// </summary>
+        public HTTPResponse GetCameraMap()
         {
-            return GetPropertyMap(myCamera, _Camera => _Camera.TvMap);
+            return JSONMap_HTTPResult("CameraMap", CanonDSLRWrapper.Instance.GetCameraMap());
         }
 
         #endregion
 
-        #region GetAvMap(myCamera)
+        #region GetCameraProperty(myCamera, myPropertyName)
 
-        public HTTPResponse GetAvMap(String myCamera)
+        public HTTPResponse GetCameraProperty(String myCamera, String myPropertyName)
         {
-            return GetPropertyMap(myCamera, _Camera => _Camera.AvMap);
-        }
 
-        #endregion
+            switch (myPropertyName.ToUpper())
+            {
 
-        #region GetISOMap(myCamera)
+                case "TV"     : return GetProperty   (myCamera, "Tv",     _Camera => _Camera.Tv.ToString());
+                case "AV"     : return GetProperty   (myCamera, "Av",     _Camera => _Camera.Av.ToString());
+                case "ISO"    : return GetProperty   (myCamera, "ISO",    _Camera => _Camera.ISO.ToString());
+                case "TVMAP"  : return GetPropertyMap(myCamera, "TvMap",  _Camera => _Camera.TvMap);
+                case "AVMAP"  : return GetPropertyMap(myCamera, "AvMap",  _Camera => _Camera.AvMap);
+                case "ISOMAP" : return GetPropertyMap(myCamera, "ISOMap", _Camera => _Camera.ISOMap);
 
-        public HTTPResponse GetISOMap(String myCamera)
-        {
-            return GetPropertyMap(myCamera, _Camera => _Camera.ISOMap);
+                default: return new HTTPResponse(
+
+                             new HTTPResponseHeader()
+                             {
+                                 HttpStatusCode = HTTPStatusCode.NotFound,
+                                 CacheControl   = "no-cache",
+                                 ContentType    = HTTPContentType.HTML_UTF8
+                             },
+                            
+                             UTF8Encoding.UTF8.GetBytes("Camera property '" + myPropertyName + "' not found!")
+
+                         );
+
+            }
+
         }
 
         #endregion
@@ -369,25 +480,77 @@ namespace com.aperis.CanonDSLRServer
         public HTTPResponse TakePicture(String myCamera)
         {
 
-            #region HTTPResponse
+            UInt32 _CameraId;
 
-            //ToDo: Implement real content negotiation!
-            var _ContentType = HTTPContentType.HTML_UTF8;
+            if (UInt32.TryParse(myCamera, out _CameraId))
+            {
 
-            return new HTTPResponse(
-
-                new HTTPResponseHeader()
+                try
                 {
-                    HttpStatusCode = HTTPStatusCode.OK,
-                    CacheControl   = "no-cache",
-                    ContentType    = _ContentType
-                },
 
-                UTF8Encoding.UTF8.GetBytes("No picture taken!")
+                    var _Camera      = CanonDSLRWrapper.Instance.GetCamera(_CameraId);
+                    var _QueryString = IHTTPConnection.RequestHeader.QueryString;
 
-            );
+                    String _Tv  = null;
+                    String _Av  = null;
+                    String _ISO = null;
 
-            #endregion
+                    _QueryString.TryGetValue("Tv",  out  _Tv);
+                    _QueryString.TryGetValue("Av",  out  _Av);
+                    _QueryString.TryGetValue("ISO", out _ISO);
+
+                    _Camera.TakePicture();
+
+                    return new HTTPResponse(
+
+                        new HTTPResponseHeader()
+                        {
+                            HttpStatusCode = HTTPStatusCode.OK,
+                            CacheControl   = "no-cache",
+                            ContentType    = HTTPContentType.JPG
+                        },
+
+                        Assembly.GetExecutingAssembly().GetManifestResourceStream("CanonDSLRServer.resources.photo.jpg")
+
+                    );
+
+
+                }
+                catch (Exception e)
+                {
+                    return new HTTPResponse(
+
+                        new HTTPResponseHeader()
+                        {
+                            HttpStatusCode = HTTPStatusCode.InternalServerError,
+                            CacheControl   = "no-cache",
+                            ContentType    = HTTPContentType.HTML_UTF8
+                        },
+
+                        UTF8Encoding.UTF8.GetBytes(e.ToString())
+
+                    );
+                }
+
+            }
+            
+            else
+            {
+
+                return new HTTPResponse(
+
+                    new HTTPResponseHeader()
+                    {
+                        HttpStatusCode = HTTPStatusCode.NotFound,
+                        CacheControl   = "no-cache",
+                        ContentType    = HTTPContentType.HTML_UTF8
+                    },
+
+                    UTF8Encoding.UTF8.GetBytes("Camera '" + myCamera + "' not found!")
+
+                );
+
+            } 
 
         }
 
@@ -428,8 +591,8 @@ namespace com.aperis.CanonDSLRServer
                 // Get the apropriate content type based on the suffix of the requested resource
                 switch (myResource.Remove(0, myResource.LastIndexOf(".") + 1))
                 {
-                    case "htm":  _ResponseContentType = HTTPContentType.XHTML_UTF8;      break;
-                    case "html": _ResponseContentType = HTTPContentType.XHTML_UTF8;      break;
+                    case "htm":  _ResponseContentType = HTTPContentType.HTML_UTF8;       break;
+                    case "html": _ResponseContentType = HTTPContentType.HTML_UTF8;       break;
                     case "css":  _ResponseContentType = HTTPContentType.CSS_UTF8;        break;
                     case "gif":  _ResponseContentType = HTTPContentType.GIF;             break;
                     case "ico":  _ResponseContentType = HTTPContentType.ICO;             break;
@@ -488,15 +651,6 @@ namespace com.aperis.CanonDSLRServer
 
             #endregion
 
-        }
-
-        #endregion
-
-        #region GetResources_JQuery(myResource)
-
-        public HTTPResponse GetResources_JQuery(String myResource)
-        {
-            return GetResources("jquery/" + myResource);
         }
 
         #endregion

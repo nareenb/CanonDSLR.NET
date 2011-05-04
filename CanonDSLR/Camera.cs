@@ -1123,7 +1123,7 @@ namespace com.aperis.CanonDSLR
 
                     try
                     {
-                        var _FileStream = new FileStream("c:\\Users\\ahzf\\Desktop\\" + _DirectoryItemInfo.FileName.ToString(), FileMode.Create, FileAccess.ReadWrite);
+                        var _FileStream = new FileStream("c:\\Users\\ahzf\\Desktop\\Wolken\\" + _DirectoryItemInfo.FileName.ToString(), FileMode.Create, FileAccess.ReadWrite);
                         var _BinaryWriter = new BinaryWriter(_FileStream);
                         _BinaryWriter.Write(buffer);
                         _BinaryWriter.Close();

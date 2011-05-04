@@ -10,34 +10,163 @@
 
 	<script type="text/javascript"> 
 
+        // Get a list/map of all available values of
+        // a given camera setting
+	    function GetCameraPropertyMap(CameraId, PropertyName, HTMLSelectBox) {
+
+            if (typeof(PropertyName) != "string") return this;
+
+	        $.ajax({
+
+	            url:      "/" + CameraId + "/property/" + PropertyName + "Map",
+                type:     "GET",
+                dataType: "json",
+
+                success:  function (jsondata) {
+                              if (HTMLSelectBox != null) {
+                                  if ($(HTMLSelectBox).options != null) {
+                                      $(HTMLSelectBox).options.length = 0;
+                                  }
+                                  $(HTMLSelectBox).addOption(jsondata[PropertyName + "Map"]);
+                                  GetCameraProperty(CameraId, PropertyName, HTMLSelectBox);
+                              }
+                          },
+
+                error:    function (jqXHR, textStatus, errorThrown) {
+                              
+                              if ($(HTMLSelectBox).options != null) {
+                                  $(HTMLSelectBox).options.length = 0;
+                              }
+
+                              alert("Error retrieving property map '" + PropertyName + "Map' from camera '" + CameraId + "': " + textStatus);
+
+                          }
+
+		    });
+
+        }
+
+        // Get the current value of a given camera setting
+        function GetCameraProperty(CameraId, PropertyName, HTMLSelectBox) {
+
+            if (typeof(PropertyName) != "string") return this;
+
+            $.ajax({
+
+                url:      "/" + CameraId + "/property/" + PropertyName,
+                type:     "GET",
+                dataType: "json",
+
+                success: function (jsondata) {
+                             if (HTMLSelectBox != null) {
+                                 $(HTMLSelectBox).selectOptions(jsondata[PropertyName], true);
+                             }
+                         },
+
+                error:   function (jqXHR, textStatus, errorThrown) {
+                             alert("Error retrieving property '" + PropertyName + "' from camera '" + CameraId + "': " + textStatus);
+                         }
+
+            });
+
+        }
+
+
+        // Set selectbox options retrieved via ajax
+        function GetAllCameraSettings(CameraId) {            
+            GetCameraPropertyMap(CameraId, "Tv",  $("#Tv"));
+            GetCameraPropertyMap(CameraId, "Av",  $("#Av"));
+            GetCameraPropertyMap(CameraId, "ISO", $("#ISO"));
+        }
+
+
 		// Wait for the DOM to be loaded!
-		$(document).ready(function() {
+        $(document).ready(function () {
 
-          // bind form using 'ajaxForm'
-			$('#CameraSettings').ajaxForm({
-//				beforeSubmit:		showRequest,  	// pre-submit callback
-//              success:			showResponse,  	// post-submit callback
-			});
-		  
-			$('#CameraSettings').submit(function() {
-				alert('SubmitFunction');
-				// submit the form 
-			//	$(this).ajaxSubmit(); 
-				// return false to prevent normal browser submit and page navigation 
-				return false; 
-			});
-			
-			var Cameras = {
-				"0"  : "0",
-			};
-			
-			$("#Camera").addOption(Cameras, false);
-			
-            $("#Tv"). ajaxAddOption("/0/properties/TvMap");
-			$("#Av"). ajaxAddOption("/0/properties/AvMap");
-            $("#ISO").ajaxAddOption("/0/properties/ISOMap");
+            // bind form using 'ajaxForm'
+            $('#CameraSettings').ajaxForm({
+                //				beforeSubmit:		showRequest,  	// pre-submit callback
+                //              success:			showResponse,  	// post-submit callback
+            });
 
-		});
+            $('#CameraSettings').submit(function () {
+                //$(this).ajaxSubmit();
+
+                var CameraId = $("#CameraId").selectedValues()[0];
+                var _Tv      = $("#Tv")      .selectedValues()[0];
+                var _Av      = $("#Av")      .selectedValues()[0];
+                var _ISO     = $("#ISO")     .selectedValues()[0];
+
+                var _Url = "/" + CameraId + "/TakePicture?";
+
+                if (_Tv != null)
+                    _Url = _Url + "&Tv=" +  _Tv;
+
+                if (_Av != null)
+                    _Url = _Url + "&Av=" +  _Av;
+
+                if (_ISO != null)
+                    _Url = _Url + "&ISO=" + _ISO;
+
+                document.images["photo"].src = _Url.replace("\?&", "\?");
+
+//                $.ajax({
+//                    url: _Url.replace("\?&", "\?"),
+//                    type: "GET",
+//                    success: function (text) {
+//                        //alert(text);
+//                        document.images["photo"].src = BildURL;
+//                        //$('#CameraId').html("<div id='message'></div>");
+//                        //$('#message').html("<h2>" + text + "</h2>");
+//                        //.append("<p>We will be in touch soon.</p>")
+//                        //.hide()
+//                        //.fadeIn(1500, function () {
+//                        //$('#message').append("<img id='checkmark' src='images/check.png' />");
+//                        //});
+//                    }
+//                });
+
+                // return false to prevent normal browser submit and page navigation 
+                return false;
+
+            });
+
+
+            // Get a list of all available cameras
+            $.ajax({
+
+                url: "/CameraMap",
+                type: "GET",
+                dataType: "json",
+
+                success: function (jsondata) {
+
+                    // Fill the #CameraId selectbox
+                    $("#CameraId").addOption(jsondata.CameraMap, false);
+
+                    var _FirstCameraId = -1;
+
+                    // Get the properties of the first found camera
+                    for (var cameraId in jsondata.CameraMap) {
+                        _FirstCameraId = cameraId;
+                        break;
+                    }
+
+                    if (_FirstCameraId != null)
+                        GetAllCameraSettings(_FirstCameraId);
+
+                    else
+                        alert("No cameras found!");
+
+                },
+
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error retrieving list of cameras!");
+                }
+
+            });
+
+        });
 
 		// pre-submit callback 
 		function showRequest(formData, jqForm, options) {
@@ -77,14 +206,6 @@
 				
 		} 
 
-		function myAction() {
-			alert('lalala');
-		}
-
-		function mySubmit() {
-			alert('mySubmit');
-		}
-
 //		$.post(
 //			"register.php",
 //			$("#CameraSettings").serialize(),
@@ -97,32 +218,33 @@
 	
 </head>
 <!-- this.form.Pizza.options[this.form.Pizza.selectedIndex].value -->
-<!-- action="javascript:mySubmit()"  -->
 <body>
 
-	<form id="CameraSettings">
+	<form id="CameraSettings" action="">
 
 		<p>
-			Camera <select id="Camera" name="Camera" size="1" onchange="javascript:alert(this.value)"></select>
+			Camera <select id="CameraId" name="CameraId" size="1" onchange="javascript:GetAllCameraSettings(this.value)"></select>
 		</p>
   
 		<p>
-			Tv <select id="Tv" name="Tv" size="1" onchange="javascript:alert(this.value)"></select>
+			Tv <select id="Tv" name="Tv" size="1"></select>
 		</p>
   
 		<p>
-			Av <select id="Av" name="Av" size="1" onchange="javascript:alert(this.value)"></select>
+			Av <select id="Av" name="Av" size="1"></select>
 		</p>
   
 		<p>
-			ISO <select id="ISO" name="ISO" size="1" onchange="javascript:alert(this.value)"></select>
+			ISO <select id="ISO" name="ISO" size="1"></select>
 		</p>
 
 		<p>
-			<input type="submit" value=" Take Picture "></input>
+			<input type="submit" value=" Take Picture " />
 		</p>
 
 	</form>
+
+    <img name="photo" alt="the photo!" src="/resources/images/appIcon.png" width="600" height="200" border="1">
 
 </body>
 

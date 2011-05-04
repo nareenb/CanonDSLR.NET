@@ -35,7 +35,6 @@ namespace com.aperis.CanonDSLRServer
     public interface ICanonDSLRService : IHTTPService
     {
 
-
         #region GetLandingpage
 
         /// <summary>
@@ -51,16 +50,12 @@ namespace com.aperis.CanonDSLRServer
         #region Camera Properties
 
         [NoAuthentication]
-        [HTTPMapping(HTTPMethods.GET, "/{myCamera}/properties/TvMap")]
-        HTTPResponse GetTvMap(String myCamera);
+        [HTTPMapping(HTTPMethods.GET, "/CameraMap")]
+        HTTPResponse GetCameraMap();
 
         [NoAuthentication]
-        [HTTPMapping(HTTPMethods.GET, "/{myCamera}/properties/AvMap")]
-        HTTPResponse GetAvMap(String myCamera);
-
-        [NoAuthentication]
-        [HTTPMapping(HTTPMethods.GET, "/{myCamera}/properties/ISOMap")]
-        HTTPResponse GetISOMap(String myCamera);
+        [HTTPMapping(HTTPMethods.GET, "/{myCamera}/property/{myProperty}")]
+        HTTPResponse GetCameraProperty(String myCamera, String myProperty);
 
         #endregion
 
@@ -72,7 +67,7 @@ namespace com.aperis.CanonDSLRServer
         /// <param name="myGraph">The name of the graph.</param>
         /// <returns>A single graph.</returns>
         [NoAuthentication]
-        [HTTPMapping(HTTPMethods.GET, "/{myCamera}/takepicture")]
+        [HTTPMapping(HTTPMethods.GET, "/{myCamera}/TakePicture")]
         HTTPResponse TakePicture(String myCamera);
 
         #endregion
@@ -86,13 +81,6 @@ namespace com.aperis.CanonDSLRServer
         [NoAuthentication]
         [HTTPMapping(HTTPMethods.GET, "/resources/{myResource}")]
         HTTPResponse GetResources(String myResource);
-
-        /// <summary>
-        /// Returns internal resources embedded within the assembly.
-        /// </summary>
-        [NoAuthentication]
-        [HTTPMapping(HTTPMethods.GET, "/resources/jquery/{myResource}")]
-        HTTPResponse GetResources_JQuery(String myResource);
 
 
         /// <summary>
@@ -122,7 +110,6 @@ namespace com.aperis.CanonDSLRServer
         HTTPResponse GetError(String myHTTPStatusCode);
 
         #endregion
-
 
     }
 

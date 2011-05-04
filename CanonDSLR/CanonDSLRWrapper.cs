@@ -23,6 +23,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 
 using com.aperis.CanonDSLR.CanonSDK;
+using System.Collections.Generic;
 
 #endregion
 
@@ -37,8 +38,8 @@ namespace com.aperis.CanonDSLR
 
         #region Data
 
-        private        readonly IntPtr  _CameraList;
-        private                 Int32   _CameraCount;
+        private                 IntPtr  _CameraList;
+        private                 UInt32  _CameraCount;
         private static volatile Boolean _Quit;
 
         #endregion
@@ -172,19 +173,9 @@ namespace com.aperis.CanonDSLR
 
             _Quit = false;
 
-            CanonSDKError _CanonSDKError;
-
-            _CanonSDKError = (CanonSDKError) EDSDK.InitializeSDK();
+            var _CanonSDKError = (CanonSDKError) EDSDK.InitializeSDK();
             if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
                 throw new InitSDKException(_CanonSDKError);
-
-            _CanonSDKError = (CanonSDKError) EDSDK.EdsGetCameraList(out _CameraList);
-            if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
-                throw new GetCameraListException(_CanonSDKError);
-
-            _CanonSDKError = (CanonSDKError) EDSDK.EdsGetChildCount(_CameraList, out _CameraCount);
-            if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
-                throw new GetCameraListException(_CanonSDKError);
 
         }
 
@@ -192,6 +183,59 @@ namespace com.aperis.CanonDSLR
 
         #endregion
 
+
+        #region GetCameraMap()
+
+        /// <summary>
+        /// Return a map of valid camera ids.
+        /// </summary>
+        public IEnumerable<KeyValuePair<String, String>> GetCameraMap()
+        {
+
+            Camera _Camera          = null;
+            String _OwnerName       = null;
+            var    _ListOfCameraIds = new List<KeyValuePair<String, String>>();
+
+            #region Get the current camera list
+
+            var _CanonSDKError = (CanonSDKError) EDSDK.EdsGetCameraList(out _CameraList);
+            if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
+                throw new GetCameraListException(_CanonSDKError);
+
+            Int32 _CameraCountSigned;
+
+            _CanonSDKError = (CanonSDKError) EDSDK.EdsGetChildCount(_CameraList, out _CameraCountSigned);
+            if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
+                throw new GetCameraListException(_CanonSDKError);
+
+            _CameraCount = (UInt32) _CameraCountSigned;
+
+            #endregion
+
+
+            for (var i = 0U; i<=_CameraCount; i++)
+            {
+                try
+                {
+                    
+                    _Camera    = GetCamera(i);
+
+                    if (_Camera.SessionOpened == false)
+                        _Camera.OpenSession();
+
+                    _OwnerName = (_Camera.OwnerName != null && _Camera.OwnerName != "") ? " (" + _Camera.OwnerName + ")" : "";
+                    _ListOfCameraIds.Add(new KeyValuePair<String, String>(i.ToString(), _Camera.ProductName + _OwnerName));
+
+                }
+                catch (Exception e)
+                { }
+            }
+
+            return _ListOfCameraIds;
+
+        }
+
+        #endregion
 
         #region GetCamera(myCameraId)
 
@@ -209,7 +253,7 @@ namespace com.aperis.CanonDSLR
 
             IntPtr _CameraPtr;
             
-            var _CanonSDKError = (CanonSDKError) EDSDK.EdsGetChildAtIndex(_CameraList, 0, out _CameraPtr);
+            var _CanonSDKError = (CanonSDKError) EDSDK.EdsGetChildAtIndex(_CameraList, (Int32) myCameraId, out _CameraPtr);
 
             if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
                 throw new GetCameraException(_CanonSDKError);

@@ -146,7 +146,6 @@ namespace com.aperis.CanonDSLRServer
 
         #endregion
 
-
     }
 
 }
