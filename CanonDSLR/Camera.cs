@@ -982,56 +982,39 @@ namespace com.aperis.CanonDSLR
 
             CanonSDKError _CanonSDKError;
 
+
             // Register StateEventHandler
             _StateEventHandler = new EDSDK.EdsStateEventHandler(stateEventHandler);
             _CanonSDKError = (CanonSDKError) EDSDK.EdsSetCameraStateEventHandler(_CameraDevice, StateEvent.All, _StateEventHandler, new IntPtr(0));
             if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
+            {
                 Console.WriteLine("Error registering state event handler!");
+                return _CanonSDKError;
+            }
 
 
             // Open Camera Session
             _CanonSDKError = (CanonSDKError) EDSDK.EdsOpenSession(_CameraDevice);
             if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
+            {
                 Console.WriteLine("Error opening the camera session!");
+                return _CanonSDKError;
+            }
 
 
             // Register PropertyEventHandler
             _PropertyEventHandler = new EDSDK.EdsPropertyEventHandler(HandlePropertyEvent);
             _CanonSDKError = (CanonSDKError) EDSDK.EdsSetPropertyEventHandler(_CameraDevice, PropertyEvent.All, _PropertyEventHandler, new IntPtr(0));
             if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
+            {
                 Console.WriteLine("Error registering property event handler!");
-
+                return _CanonSDKError;
+            }
 
             //_ProgressCallbackHandler = new EDSDK.EdsProgressCallback(progressCallbackHandler);
             //_CanonSDKError = (CanonSDKError) EDSDK.EdsSetProgressCallback(_CameraDevice, _ProgressCallbackHandler, ProgressOption.Periodically, IntPtr.Zero);
             //if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
             //    Console.WriteLine("Error registering progress callback handler!");
-
-            
-
-
-       //     var saveTo = SaveTo.Host;
-       //     _CanonSDKError = (CanonSDKError) EDSDK.EdsSetPropertyData(_CameraDevice, PropertyID.SaveTo, 0, 4, (uint)saveTo);
-            this.SaveTo = SaveTo.Host;
-//            Console.WriteLine("SetProperty[SaveTo] : " + _CanonSDKError);
-
-            var capacity = new Capacity();
-            capacity.NumberOfFreeClusters = 0x7FFFFFFF;
-            capacity.BytesPerSector = 0x1000;
-            capacity.Reset = 1;
-
-            _CanonSDKError = (CanonSDKError) EDSDK.EdsSetCapacity(_CameraDevice, capacity);
-            Console.WriteLine("EdsSetCapacity : " + _CanonSDKError);
-
-                //int volumeCount;
-                //CameraAPI.EdsGetChildCount(_cameraRef, out volumeCount);
-
-                //for (int i = 0; i < volumeCount; i++)
-                //{
-                //    IntPtr volumeRef;
-                //    CameraAPI.EdsGetChildAtIndex(_cameraRef, i, out volumeRef);
-                //    _volumes.Add(new Volume(volumeRef));
-                //}
 
             SessionOpened = true;
 
@@ -1060,6 +1043,38 @@ namespace com.aperis.CanonDSLR
                 Console.WriteLine("Error releasing the camera pointer!");
 
             SessionOpened = false;
+
+        }
+
+        #endregion
+
+
+        #region SaveToHost()
+
+        public CanonSDKError SaveToHost()
+        {
+
+       //     var saveTo = SaveTo.Host;
+       //     _CanonSDKError = (CanonSDKError) EDSDK.EdsSetPropertyData(_CameraDevice, PropertyID.SaveTo, 0, 4, (uint)saveTo);
+            this.SaveTo = SaveTo.Host;
+//            Console.WriteLine("SetProperty[SaveTo] : " + _CanonSDKError);
+
+            var capacity = new Capacity();
+            capacity.NumberOfFreeClusters = 0x7FFFFFFF;
+            capacity.BytesPerSector = 0x1000;
+            capacity.Reset = 1;
+
+            return (CanonSDKError) EDSDK.EdsSetCapacity(_CameraDevice, capacity);
+
+                //int volumeCount;
+                //CameraAPI.EdsGetChildCount(_cameraRef, out volumeCount);
+
+                //for (int i = 0; i < volumeCount; i++)
+                //{
+                //    IntPtr volumeRef;
+                //    CameraAPI.EdsGetChildAtIndex(_cameraRef, i, out volumeRef);
+                //    _volumes.Add(new Volume(volumeRef));
+                //}
 
         }
 

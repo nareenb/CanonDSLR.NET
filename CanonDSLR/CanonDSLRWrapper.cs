@@ -184,19 +184,10 @@ namespace com.aperis.CanonDSLR
         #endregion
 
 
-        #region GetCameraMap()
+        #region Get the current camera list
 
-        /// <summary>
-        /// Return a map of valid camera ids.
-        /// </summary>
-        public IEnumerable<KeyValuePair<String, String>> GetCameraMap()
+        private void GetCameraList()
         {
-
-            Camera _Camera          = null;
-            String _OwnerName       = null;
-            var    _ListOfCameraIds = new List<KeyValuePair<String, String>>();
-
-            #region Get the current camera list
 
             var _CanonSDKError = (CanonSDKError) EDSDK.EdsGetCameraList(out _CameraList);
             if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)
@@ -210,10 +201,26 @@ namespace com.aperis.CanonDSLR
 
             _CameraCount = (UInt32) _CameraCountSigned;
 
-            #endregion
+        }
+
+        #endregion
 
 
-            for (var i = 0U; i<=_CameraCount; i++)
+        #region GetCameraMap()
+
+        /// <summary>
+        /// Return a map of valid camera ids.
+        /// </summary>
+        public IEnumerable<KeyValuePair<String, String>> GetCameraMap()
+        {
+
+            Camera _Camera          = null;
+            String _OwnerName       = null;
+            var    _ListOfCameraIds = new List<KeyValuePair<String, String>>();
+
+            GetCameraList();
+
+            for (var i = 0U; i<_CameraCount; i++)
             {
                 try
                 {
@@ -228,7 +235,9 @@ namespace com.aperis.CanonDSLR
 
                 }
                 catch (Exception e)
-                { }
+                {
+                    Console.WriteLine("GetCameraMap() => " + e);
+                }
             }
 
             return _ListOfCameraIds;
@@ -247,12 +256,14 @@ namespace com.aperis.CanonDSLR
         public Camera GetCamera(UInt32 myCameraId)
         {
 
+            IntPtr _CameraPtr;
+
+            GetCameraList();
+
             if (myCameraId > _CameraCount)
                 throw new GetCameraException(CanonSDKError.EDS_ERR_DEVICE_NOT_FOUND)
                               { Message = "Invalid CameraId!" };
 
-            IntPtr _CameraPtr;
-            
             var _CanonSDKError = (CanonSDKError) EDSDK.EdsGetChildAtIndex(_CameraList, (Int32) myCameraId, out _CameraPtr);
 
             if (_CanonSDKError != CanonSDKError.EDS_ERR_OK)

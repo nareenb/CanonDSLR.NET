@@ -47,7 +47,7 @@ namespace com.aperis.RunDSLRServer
 
         internal static Mono.Terminal.LineEditor Editor;
 
-        public static bool TabAtStartCompletes
+        public static Boolean TabAtStartCompletes
         {
 
             get
@@ -82,38 +82,29 @@ namespace com.aperis.RunDSLRServer
 
         private static volatile Boolean _Quit;
 
-
         static void Main(String[] myArgs)
         {
 
-            //var edsStateEventHandler = new EDSDK.EdsStateEventHandler(stateEventHandler);
-            //err = EDSDK.EdsSetCameraStateEventHandler(_Camera, EDSDK.StateEvent_All, edsStateEventHandler, new IntPtr(0));
-
-            //_Camera._ObjectEventHandler(123, IntPtr.Zero, IntPtr.Zero);
-
-
-
-            ////uint _PropertyData2;
-            ////var _GetPropAv = EDSDKLib.EDSDK.EdsGetPropertyData(_Camera.DevicePointer, (uint) EDSDK.PropertyID.PropID_Av, 0, out _PropertyData2);
-            ////Console.WriteLine("GetPropAv: {0} => {1}", (_GetPropAv == 0) ? "ok" : "failed: " + _GetPropAv, _PropertyData2);
-
-            ////var _GetPropTv = EDSDKLib.EDSDK.EdsGetPropertyData(_Camera .DevicePointer, (uint) EDSDK.PropertyID.PropID_Tv, 0, out _PropertyData2);
-            ////Console.WriteLine("GetPropTv: {0} => {1}", (_GetPropTv == 0) ? "ok" : "failed: " + _GetPropTv, _PropertyData2);
-
-            //var _SetProperty = EDSDKLib.EDSDK.EdsSetPropertyData(_Camera.DevicePointer, EDSDKLib.EDSDK.PropID_SaveTo, 0, 4, (uint)EDSDKLib.EDSDK.EdsSaveTo.Camera);
-            //Console.WriteLine("SetProperty: {0}", (_SetProperty == 0) ? "ok" : "failed!");
-
-            //var edsObjectEventHandler = new EDSDK.EdsObjectEventHandler(objectEventHandler);
-            //var _SetObjectEventHandler = EDSDKLib.EDSDK.EdsSetObjectEventHandler(_Camera.DevicePointer, EDSDK.ObjectEvent_All, edsObjectEventHandler, IntPtr.Zero);
-            //Console.WriteLine("SetObjectEventHandler: {0}", (_SetObjectEventHandler == 0) ? "ok" : "failed!");
-
-            var workerThread = new Thread(CanonDSLRWrapper.NotificationHelper);
-            workerThread.Start();
+            //var workerThread = new Thread(CanonDSLRWrapper.NotificationHelper);
+            //workerThread.Start();
 
             var _CanonDSLRServer = new CanonDSLRServer.CanonDSLRServer();
+
+            //Console.WriteLine("Press any key to terminate!");
+            //Console.ReadLine();
+
+            //Console.WriteLine("CanonSDK terminated: {0}", (EDSDK.TerminateSDK() == 0) ? "ok" : "failed!");
+
+            //Environment.Exit(0);
+
+            // ------------------------------------------------------------------------
+
+            #region Get properties
+
             var _CanonDSLRWrapper = CanonDSLRWrapper.Instance;
-            var _Camera = _CanonDSLRWrapper.GetCamera(0);
+            var _Camera           = _CanonDSLRWrapper.GetCamera(0);
             _Camera.OpenSession();
+            //_Camera.SaveToHost();
 
             while (_Camera == null)
             {
@@ -127,45 +118,46 @@ namespace com.aperis.RunDSLRServer
             Console.WriteLine("BodyId : " + _Camera.BodyId);
             Console.WriteLine("OwnerName : " + _Camera.OwnerName);
             //Console.WriteLine("MakerName : "            + _Camera.MakerName);
-            Console.WriteLine("CameraTime : " + _Camera.CameraTime);
-            Console.WriteLine("FirmwareVersion : " + _Camera.FirmwareVersion);
-            Console.WriteLine("BatteryLevel : " + _Camera.BatteryLevel);
-            Console.WriteLine("SaveTo : " + _Camera.SaveTo);
-            //Console.WriteLine("BatteryQuality : "       + _Camera.BatteryQuality);
-            Console.WriteLine("CurrentStorage : " + _Camera.CurrentStorage);
-            Console.WriteLine("CurrentFolder : " + _Camera.CurrentFolder);
+            //Console.WriteLine("CameraTime : " + _Camera.CameraTime);
+            //Console.WriteLine("FirmwareVersion : " + _Camera.FirmwareVersion);
+            //Console.WriteLine("BatteryLevel : " + _Camera.BatteryLevel);
+            //Console.WriteLine("SaveTo : " + _Camera.SaveTo);
+            ////Console.WriteLine("BatteryQuality : "       + _Camera.BatteryQuality);
+            //Console.WriteLine("CurrentStorage : " + _Camera.CurrentStorage);
+            //Console.WriteLine("CurrentFolder : " + _Camera.CurrentFolder);
 
-            Console.WriteLine();
+            //Console.WriteLine();
 
-            Console.WriteLine("AEMode : " + _Camera.AEMode);
-            Console.WriteLine("AFMode : " + _Camera.AFMode);
-            Console.WriteLine("Av : " + _Camera.Av);
-            Console.WriteLine("Tv : " + _Camera.Tv);
-            Console.WriteLine("ISO : " + _Camera.ISO);
-            Console.WriteLine("ExposureCompensation : " + _Camera.ExposureCompensation);
-            //Console.WriteLine("ColorTemperature : "     + _Camera.ColorTemperature);
-            Console.WriteLine("MeteringMode : " + _Camera.MeteringMode);
-            Console.WriteLine("DriveMode : " + _Camera.DriveMode);
+            //Console.WriteLine("AEMode : " + _Camera.AEMode);
+            //Console.WriteLine("AFMode : " + _Camera.AFMode);
+            //Console.WriteLine("Av : " + _Camera.Av);
+            //Console.WriteLine("Tv : " + _Camera.Tv);
+            //Console.WriteLine("ISO : " + _Camera.ISO);
+            //Console.WriteLine("ExposureCompensation : " + _Camera.ExposureCompensation);
+            ////Console.WriteLine("ColorTemperature : "     + _Camera.ColorTemperature);
+            //Console.WriteLine("MeteringMode : " + _Camera.MeteringMode);
+            //Console.WriteLine("DriveMode : " + _Camera.DriveMode);
 
-            Console.WriteLine("DeviceDescription : " + _Camera.DeviceDescription);
+            //Console.WriteLine("DeviceDescription : " + _Camera.DeviceDescription);
 
-            Console.WriteLine();
+            //Console.WriteLine();
 
-            Console.WriteLine("Take a picture?");
-            Console.ReadLine();
+            #endregion
 
-            //_Camera.TakePicture();
-            Console.WriteLine("Taking picture!");
-            _Camera.TakePicture(Tv.Tv1_125, Av.Av2_8, ISO.ISO1600);
+            #region Taking a picture
 
+            //Console.ReadLine();
+            while (true)
+            {
+                Console.WriteLine("Taking a picture...");
+                _Camera.TakePicture();
+                //Tv.Tv1_250, Av.Av2_8, ISO.ISO3200);
+                Thread.Sleep(10000);
+            }
 
-            Console.WriteLine("Take a picture?");
-            Console.ReadLine();
-            _Camera.TakePicture(Tv.Tv1_250, Av.Av2_8, ISO.ISO3200);
+            #endregion
 
-
-
-            //#region CSharp Shell
+            #region CSharp Shell
 
             //var _Report = new Report(new ConsoleReportPrinter());
             //var _CLP    = new CommandLineParser(_Report);
@@ -192,16 +184,10 @@ namespace com.aperis.RunDSLRServer
 
             //var a = new CSharpShell(_Evaluator).Run(_StartupFiles);
 
-            //#endregion
+            #endregion
 
-            Console.WriteLine("done!");
-            Console.ReadLine();
-
-            Console.WriteLine("TerminateSDK: {0}", (EDSDK.TerminateSDK() == 0) ? "ok" : "failed!");
-
-            _Camera.CloseSession();
-            //   _CanonDSLRServer.CanonDSLRWrapper.Close();
-
+            //_Camera.CloseSession();
+            //_CanonDSLRServer.CanonDSLRWrapper.Close();
 
         }
 
