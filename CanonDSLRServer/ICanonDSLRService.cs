@@ -21,7 +21,7 @@
 using System;
 
 using de.ahzf.Hermod.HTTP;
-using de.ahzf.Hermod.HTTP.Common;
+using com.aperis.CanonDSLR;
 
 #endregion
 
@@ -32,8 +32,12 @@ namespace com.aperis.CanonDSLRServer
     /// The CanonDSLR service interface mapping HTTP/REST URIs onto .NET methods.
     /// </summary>
     //[HTTPService(Host: "localhost:8080", ForceAuthentication: true)]
+    [HTTPService]
     public interface ICanonDSLRService : IHTTPService
     {
+
+        CanonDSLRWrapper CanonDSLRWrapper { get; set; }
+
 
         #region GetLandingpage
 

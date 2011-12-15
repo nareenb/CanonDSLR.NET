@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunDSLRServer", "RunDSLRSer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanonDSLRWindow", "CanonDSLRWindow\CanonDSLRWindow.csproj", "{9A78FFC3-5381-4EC0-804D-3684340837DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hermod", "..\Hermod\Hermod\Hermod.csproj", "{EAB20045-3D15-4220-BB56-B22FF6630AC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hermod", "..\..\ahzf\Hermod\Hermod\Hermod.csproj", "{EAB20045-3D15-4220-BB56-B22FF6630AC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

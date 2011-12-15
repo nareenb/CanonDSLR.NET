@@ -32,7 +32,7 @@ namespace com.aperis.CanonDSLRServer
     /// <summary>
     /// A tcp/http based CanonDSLR server.
     /// </summary>
-    public class CanonDSLRServer : HTTPServer<CanonDSLRService>
+    public class CanonDSLRServer : HTTPServer<ICanonDSLRService>
     {
 
         #region Data

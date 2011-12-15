@@ -27,7 +27,6 @@ using System.Collections.Generic;
 
 using de.ahzf.Hermod;
 using de.ahzf.Hermod.HTTP;
-using de.ahzf.Hermod.HTTP.Common;
 using com.aperis.CanonDSLR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -40,7 +39,7 @@ namespace com.aperis.CanonDSLRServer
     /// <summary>
     /// The CanonDSLR service implementation.
     /// </summary>
-    public class CanonDSLRService : ICanonDSLRService
+    public class CanonDSLRService : AHTTPService, ICanonDSLRService
     {
 
         
@@ -72,20 +71,20 @@ namespace com.aperis.CanonDSLRServer
         /// Creates a new CanonDSLRService.
         /// </summary>
         public CanonDSLRService()
+            : base(HTTPContentType.HTML_UTF8)
         { }
 
         #endregion
 
-        #region CanonDSLRService(myIHTTPConnection)
+        #region CanonDSLRService(IHTTPConnection)
 
         /// <summary>
         /// Creates a new CanonDSLRService.
         /// </summary>
-        /// <param name="myIHTTPConnection">The http connection for this request.</param>
-        public CanonDSLRService(IHTTPConnection myIHTTPConnection)
-        {
-            IHTTPConnection = myIHTTPConnection;
-        }
+        /// <param name="IHTTPConnection">The http connection for this request.</param>
+        public CanonDSLRService(IHTTPConnection IHTTPConnection)
+            : base(IHTTPConnection, HTTPContentType.HTML_UTF8, "Gera.resources.")
+        { }
 
         #endregion
 
@@ -140,15 +139,15 @@ namespace com.aperis.CanonDSLRServer
         private UInt32 GetStartOffset()
         {
 
-            String _StringValue = null;
+            List<String> _StringValues = null;
 
-            if (IHTTPConnection.RequestHeader.QueryString != null)
-                if (IHTTPConnection.RequestHeader.QueryString.TryGetValue("OFFSET" + "." + "START", out _StringValue))
+            if (IHTTPConnection.InHTTPRequest.QueryString != null)
+                if (IHTTPConnection.InHTTPRequest.QueryString.TryGetValue("OFFSET" + "." + "START", out _StringValues))
                 {
 
                     UInt32 _Value;
 
-                    if (UInt32.TryParse(_StringValue, out _Value))
+                    if (UInt32.TryParse(_StringValues[0], out _Value))
                         return _Value;
 
                 }
@@ -164,15 +163,15 @@ namespace com.aperis.CanonDSLRServer
         private UInt32 GetEndOffset()
         {
 
-            String _StringValue = null;
+            List<String> _StringValues = null;
 
-            if (IHTTPConnection.RequestHeader.QueryString != null)
-                if (IHTTPConnection.RequestHeader.QueryString.TryGetValue("OFFSET" + "." + "END", out _StringValue))
+            if (IHTTPConnection.InHTTPRequest.QueryString != null)
+                if (IHTTPConnection.InHTTPRequest.QueryString.TryGetValue("OFFSET" + "." + "END", out _StringValues))
                 {
 
                     UInt32 _Value;
 
-                    if (UInt32.TryParse(_StringValue, out _Value))
+                    if (UInt32.TryParse(_StringValues[0], out _Value))
                         return _Value;
 
                 }
@@ -281,18 +280,13 @@ namespace com.aperis.CanonDSLRServer
             var _JSONMap = new JProperty(myMap, _JSONItems);
             var _JSON    = new JObject(_JSONMap);
 
-            return new HTTPResponse(
-
-                new HTTPResponseHeader()
+            return new HTTPResponseBuilder()
                 {
-                    HttpStatusCode = HTTPStatusCode.OK,
+                    HTTPStatusCode = HTTPStatusCode.OK,
                     CacheControl   = "no-cache",
-                    ContentType    = HTTPContentType.JSON_UTF8
-                },
-
-                UTF8Encoding.UTF8.GetBytes(_JSON.ToString())
-
-            );
+                    ContentType    = HTTPContentType.JSON_UTF8,
+                    Content        = UTF8Encoding.UTF8.GetBytes(_JSON.ToString())
+                };
 
         }
 
@@ -305,18 +299,13 @@ namespace com.aperis.CanonDSLRServer
 
             var _JSON = new JObject(new JProperty(myKey, myValue));
 
-            return new HTTPResponse(
-
-                new HTTPResponseHeader()
+            return new HTTPResponseBuilder()
                 {
-                    HttpStatusCode = HTTPStatusCode.OK,
+                    HTTPStatusCode = HTTPStatusCode.OK,
                     CacheControl   = "no-cache",
-                    ContentType    = HTTPContentType.JSON_UTF8
-                },
-
-                UTF8Encoding.UTF8.GetBytes(_JSON.ToString())
-
-            );
+                    ContentType    = HTTPContentType.JSON_UTF8,
+                    Content        = UTF8Encoding.UTF8.GetBytes(_JSON.ToString())
+                };
 
         }
 
@@ -342,18 +331,14 @@ namespace com.aperis.CanonDSLRServer
             else
             {
 
-                return new HTTPResponse(
-
-                    new HTTPResponseHeader()
+                return new HTTPResponseBuilder()
                     {
-                        HttpStatusCode = HTTPStatusCode.NotFound,
+                        HTTPStatusCode = HTTPStatusCode.NotFound,
                         CacheControl   = "no-cache",
-                        ContentType    = HTTPContentType.HTML_UTF8
-                    },
-
-                    UTF8Encoding.UTF8.GetBytes("Camera '" + myCamera + "' not found!")
-
-                );
+                        ContentType    = HTTPContentType.HTML_UTF8,
+                        Content        = UTF8Encoding.UTF8.GetBytes("Camera '" + myCamera + "' not found!")
+                    };
+            
             }
 
         }
@@ -382,18 +367,14 @@ namespace com.aperis.CanonDSLRServer
                 }
                 catch (Exception e)
                 {
-                    return new HTTPResponse(
-
-                        new HTTPResponseHeader()
+                    return new HTTPResponseBuilder()
                         {
-                            HttpStatusCode = HTTPStatusCode.InternalServerError,
+                            HTTPStatusCode = HTTPStatusCode.InternalServerError,
                             CacheControl   = "no-cache",
-                            ContentType    = HTTPContentType.HTML_UTF8
-                        },
+                            ContentType    = HTTPContentType.HTML_UTF8,
+                            Content        = UTF8Encoding.UTF8.GetBytes(e.ToString())
+                        };
 
-                        UTF8Encoding.UTF8.GetBytes(e.ToString())
-
-                    );
                 }
 
             }
@@ -401,18 +382,14 @@ namespace com.aperis.CanonDSLRServer
             else
             {
 
-                return new HTTPResponse(
-
-                    new HTTPResponseHeader()
+                return new HTTPResponseBuilder()
                     {
-                        HttpStatusCode = HTTPStatusCode.NotFound,
+                        HTTPStatusCode = HTTPStatusCode.NotFound,
                         CacheControl   = "no-cache",
-                        ContentType    = HTTPContentType.HTML_UTF8
-                    },
+                        ContentType    = HTTPContentType.HTML_UTF8,
+                        Content        = UTF8Encoding.UTF8.GetBytes("Camera '" + myCamera + "' not found!")
+                    };
 
-                    UTF8Encoding.UTF8.GetBytes("Camera '" + myCamera + "' not found!")
-
-                );
             } 
 
         }
@@ -447,18 +424,13 @@ namespace com.aperis.CanonDSLRServer
                 case "AVMAP"  : return GetPropertyMap(myCamera, "AvMap",  _Camera => _Camera.AvMap);
                 case "ISOMAP" : return GetPropertyMap(myCamera, "ISOMap", _Camera => _Camera.ISOMap);
 
-                default: return new HTTPResponse(
-
-                             new HTTPResponseHeader()
+                default: return new HTTPResponseBuilder()
                              {
-                                 HttpStatusCode = HTTPStatusCode.NotFound,
+                                 HTTPStatusCode = HTTPStatusCode.NotFound,
                                  CacheControl   = "no-cache",
-                                 ContentType    = HTTPContentType.HTML_UTF8
-                             },
-                            
-                             UTF8Encoding.UTF8.GetBytes("Camera property '" + myPropertyName + "' not found!")
-
-                         );
+                                 ContentType    = HTTPContentType.HTML_UTF8,
+                                 Content        = UTF8Encoding.UTF8.GetBytes("Camera property '" + myPropertyName + "' not found!")
+                             };
 
             }
 
@@ -489,11 +461,11 @@ namespace com.aperis.CanonDSLRServer
                 {
 
                     var _Camera      = CanonDSLRWrapper.Instance.GetCamera(_CameraId);
-                    var _QueryString = IHTTPConnection.RequestHeader.QueryString;
+                    var _QueryString = IHTTPConnection.InHTTPRequest.QueryString;
 
-                    String _Tv  = null;
-                    String _Av  = null;
-                    String _ISO = null;
+                    List<String> _Tv  = null;
+                    List<String> _Av  = null;
+                    List<String> _ISO = null;
 
                     _QueryString.TryGetValue("Tv",  out  _Tv);
                     _QueryString.TryGetValue("Av",  out  _Av);
@@ -501,35 +473,24 @@ namespace com.aperis.CanonDSLRServer
 
                     _Camera.TakePicture();
 
-                    return new HTTPResponse(
-
-                        new HTTPResponseHeader()
+                    return new HTTPResponseBuilder()
                         {
-                            HttpStatusCode = HTTPStatusCode.OK,
+                            HTTPStatusCode = HTTPStatusCode.OK,
                             CacheControl   = "no-cache",
-                            ContentType    = HTTPContentType.JPG
-                        },
-
-                        Assembly.GetExecutingAssembly().GetManifestResourceStream("CanonDSLRServer.resources.photo.jpg")
-
-                    );
-
+                            ContentType    = HTTPContentType.JPG,
+                            ContentStream  = Assembly.GetExecutingAssembly().GetManifestResourceStream("CanonDSLRServer.resources.photo.jpg")
+                        };
 
                 }
                 catch (Exception e)
                 {
-                    return new HTTPResponse(
-
-                        new HTTPResponseHeader()
+                    return new HTTPResponseBuilder()
                         {
-                            HttpStatusCode = HTTPStatusCode.InternalServerError,
+                            HTTPStatusCode = HTTPStatusCode.InternalServerError,
                             CacheControl   = "no-cache",
-                            ContentType    = HTTPContentType.HTML_UTF8
-                        },
-
-                        UTF8Encoding.UTF8.GetBytes(e.ToString())
-
-                    );
+                            ContentType    = HTTPContentType.HTML_UTF8,
+                            Content        = UTF8Encoding.UTF8.GetBytes(e.ToString())
+                        };
                 }
 
             }
@@ -537,18 +498,13 @@ namespace com.aperis.CanonDSLRServer
             else
             {
 
-                return new HTTPResponse(
-
-                    new HTTPResponseHeader()
+                return new HTTPResponseBuilder()
                     {
-                        HttpStatusCode = HTTPStatusCode.NotFound,
+                        HTTPStatusCode = HTTPStatusCode.NotFound,
                         CacheControl   = "no-cache",
-                        ContentType    = HTTPContentType.HTML_UTF8
-                    },
-
-                    UTF8Encoding.UTF8.GetBytes("Camera '" + myCamera + "' not found!")
-
-                );
+                        ContentType    = HTTPContentType.HTML_UTF8,
+                        Content        = UTF8Encoding.UTF8.GetBytes("Camera '" + myCamera + "' not found!")
+                    };
 
             } 
 
@@ -601,20 +557,14 @@ namespace com.aperis.CanonDSLRServer
                     default:     _ResponseContentType = HTTPContentType.OCTETSTREAM;     break;
                 }
 
-                return new HTTPResponse(
-
-                    new HTTPResponseHeader()
+                return new HTTPResponseBuilder()
                         {
-                            HttpStatusCode = HTTPStatusCode.OK,
+                            HTTPStatusCode = HTTPStatusCode.OK,
                             ContentType    = _ResponseContentType,
-                            ContentLength  = (UInt64) _ResourceContent.Length,
                             CacheControl   = "no-cache",
                             Connection     = "close",
-                        },
-
-                    _ResourceContent
-
-                );
+                            ContentStream  = _ResourceContent
+                        };
 
             }
 
@@ -632,20 +582,15 @@ namespace com.aperis.CanonDSLRServer
                 else
                     _ResourceContent = new MemoryStream(UTF8Encoding.UTF8.GetBytes("Error 404 - File not found!"));
 
-                return new HTTPResponse(
-
-                    new HTTPResponseHeader()
+                return new HTTPResponseBuilder()
                         {
-                            HttpStatusCode = HTTPStatusCode.NotFound,
-                            ContentType    = HTTPContentType.XHTML_UTF8,
+                            HTTPStatusCode = HTTPStatusCode.NotFound,
+                            ContentType    = HTTPContentType.HTML_UTF8,
                             ContentLength  = (UInt64) _ResourceContent.Length,
                             CacheControl   = "no-cache",
                             Connection     = "close",
-                        },
-
-                    _ResourceContent
-
-                );
+                            ContentStream  = _ResourceContent
+                        };
 
             }
 
@@ -690,20 +635,16 @@ namespace com.aperis.CanonDSLRServer
         public HTTPResponse GetError(String myHTTPStatusCode)
         {
 
-            IHTTPConnection.ResponseHeader.HttpStatusCode = HTTPStatusCode.ParseString(myHTTPStatusCode);
+         //   IHTTPConnection.ResponseHeader.HTTPStatusCode = HTTPStatusCode.ParseString(myHTTPStatusCode);
 
-            if (IHTTPConnection.RequestHeader.QueryString.ContainsKey("reason"))
-                IHTTPConnection.ErrorReason = IHTTPConnection.RequestHeader.QueryString["reason"];
+            if (IHTTPConnection.InHTTPRequest.QueryString.ContainsKey("reason"))
+                IHTTPConnection.ErrorReason = IHTTPConnection.InHTTPRequest.QueryString["reason"][0];
 
-            return new HTTPResponse(
-
-                new HTTPResponseHeader()
+            return new HTTPResponseBuilder()
                 {
-                    HttpStatusCode = IHTTPConnection.ResponseHeader.HttpStatusCode,
+                    HTTPStatusCode = IHTTPConnection.ResponseHeader.HTTPStatusCode,
                     Connection     = "close"
-                }
-
-            );
+                };
 
         }
 
